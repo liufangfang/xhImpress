@@ -436,7 +436,8 @@
             //
             // If you are reading this and know any better way to handle it, I'll be glad to hear about it!
             window.scrollTo(0, 0);
-
+            root.style.top = '50%';
+            root.style.left = '50%';
             var step = stepsData["impress-" + el.id];
 
             if (activeStep) {
@@ -498,7 +499,7 @@
                 // to keep the perspective look similar for different scales
                 // we need to 'scale' the perspective, too
                 transform: perspective(config.perspective / targetScale) + scale(targetScale),
-                transitionDuration: duration + "ms",
+                transitionDuration: 0 + "ms",
                 transitionDelay: (zoomin ? delay : 0) + "ms"
             });
 
@@ -542,6 +543,7 @@
             // version 0.5.2 of impress.js: http://github.com/bartaz/impress.js/blob/0.5.2/js/impress.js
             window.clearTimeout(stepEnterTimeout);
             stepEnterTimeout = window.setTimeout(function () {
+                
                 onStepEnter(activeStep);
             }, duration + delay);
 
@@ -635,7 +637,8 @@
             init: init,
             goto: goto,
             next: next,
-            prev: prev
+            prev: prev,
+			css:css
         });
 
     };
@@ -664,20 +667,23 @@
         el = elment;
         document.addEventListener('mousedown', mouseDown, false);
         document.addEventListener('mouseup', mouseUp, false);
-
-
+        var preDelay = el.style.transitionDelay;
+        var preDuration = el.style.transitionDuration;
 
         function mouseUp() {
             document.removeEventListener('mousemove', divMove, true);
             mouseX = 0;
             mouseY = 0;
-            
+            el.style.transitionDelay = preDelay;
+            el.style.transitionDuration = preDuration;
         }
 
         function mouseDown(e) {
 
             mouseX = e.x;
             mouseY = e.y;
+            el.style.transitionDelay = '0ms';
+            el.style.transitionDuration = '0ms';
             document.addEventListener('mousemove', divMove, true);
 
         }
@@ -703,7 +709,17 @@
             mouseY = e.y;
         }
     }
-
+    function initWheelScroll(element, MouseWheelHandler)
+    {
+        if (document.addEventListener) {
+            // IE9, Chrome, Safari, Opera
+            document.addEventListener("mousewheel", MouseWheelHandler, false);
+            // Firefox
+            document.addEventListener("DOMMouseScroll", MouseWheelHandler, false);
+        }
+            // IE 6/7/8
+        else document.attachEvent("onmousewheel", MouseWheelHandler);
+    }
     // throttling function calls, by Remy Sharp
     // http://remysharp.com/2010/07/21/throttling-function-calls/
     var throttle = function (fn, delay) {
@@ -842,6 +858,26 @@
             api.goto(document.querySelector(".step.active"), 500);
         }, 250), false);
         initDragMove(document.getElementById('impress'));
+        initWheelScroll(document.getElementById('impress'), function (e) {
+            // cross-browser wheel delta
+			el.style.transitionDelay = '100ms';
+            el.style.transitionDuration = '100ms';
+            var e = window.event || e; // old IE support
+            var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+			var scale1=el.style.webkitTransform.split("scale")[1];
+			var scale2=scale1.substring(1,scale1.length-1);
+			if(delta>0){
+				api.css(el, {
+					transform:  " scale(" + 1.2*scale2 + ") "
+				  
+				});
+			}else{
+				api.css(el, {
+					transform:  " scale(" + 0.8*scale2 + ") "
+				  
+				});
+			}
+        });
     }, false);
 
 })(document, window);
