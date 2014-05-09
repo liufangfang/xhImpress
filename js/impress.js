@@ -13,7 +13,7 @@
  *  author:  Bartek Szopka
  *  version: 0.5.3
  *  url:     http://bartaz.github.com/impress.js/
- *  source:  http://github.com/bartaz/impress.js/
+ *  source:  http://github.com/bartaz/impress.js/    
  */
 
 /*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, latedef:true, newcap:true,
