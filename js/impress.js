@@ -499,7 +499,7 @@
                 // to keep the perspective look similar for different scales
                 // we need to 'scale' the perspective, too
                 transform: perspective(config.perspective / targetScale) + scale(targetScale),
-                transitionDuration: 0 + "ms",
+                transitionDuration: duration + "ms",
                 transitionDelay: (zoomin ? delay : 0) + "ms"
             });
 
